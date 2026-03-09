@@ -703,6 +703,13 @@
         .nav-logo {
             font-family: 'Instrument Serif', serif;
             font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .nav-logo img {
+            height: 32px;
+            width: 32px;
         }
         .nav-links { display: flex; gap: 32px; align-items: center; }
         .nav-links a {
@@ -733,7 +740,7 @@
     <!-- Nav -->
     <nav class="nav">
         <div class="container nav-inner">
-            <div class="nav-logo"><span class="gradient-text">Vizuara</span> AI Labs</div>
+            <div class="nav-logo"><img src="vizlogo.png" alt="Vizuara Logo"><span class="gradient-text">Vizuara</span> AI Labs</div>
             <div class="nav-links">
                 <a href="#why">Why This Bootcamp</a>
                 <a href="#lectures">Lectures</a>
@@ -1412,7 +1419,7 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <div class="footer-logo"><span class="gradient-text">Vizuara</span> AI Labs</div>
+            <div class="footer-logo"><img src="vizlogo.png" alt="Vizuara Logo" style="height:36px;width:36px;vertical-align:middle;margin-right:10px;"><span class="gradient-text">Vizuara</span> AI Labs</div>
             <p>&copy; 2026 Vizuara AI Labs. All rights reserved.</p>
             <p style="margin-top:8px;">GPU Engineers 4-Month Research Bootcamp &mdash; 5D Parallelism &amp; Modern AI</p>
         </div>
