@@ -570,24 +570,20 @@
             object-fit: cover;
         }
 
-        /* Hero background image */
-        .hero-bg-img {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            z-index: 0;
-            overflow: hidden;
-        }
-        .hero-bg-img img {
+        /* Hero GPU image */
+        .hero-img {
+            margin: 40px auto 0;
+            max-width: 600px;
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.25;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 0 40px rgba(0,212,106,0.1), 0 0 80px rgba(0,200,230,0.05);
         }
-        .hero-bg-img::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(to bottom, rgba(10,10,10,0.3) 0%, rgba(10,10,10,0.95) 80%);
+        .hero-img img {
+            width: 100%;
+            height: auto;
+            display: block;
         }
         .instructor-info h3 {
             font-size: 1.8rem;
@@ -751,7 +747,6 @@
 
     <!-- Hero -->
     <section class="hero" id="hero">
-        <div class="hero-bg-img"><img src="gpu-hero.jpg" alt="GPU chip"></div>
         <div class="orb orb-green"></div>
         <div class="orb orb-cyan"></div>
         <div class="container hero-content">
@@ -760,6 +755,9 @@
                 Applications Open
             </div>
             <h1 class="animate"><span class="gradient-text">GPU Engineers</span><br>4-Month Research Bootcamp</h1>
+            <div class="hero-img animate">
+                <img src="gpu-hero.jpg" alt="GPU Chip - NVIDIA">
+            </div>
             <p class="animate">Master 5D Parallelism. Publish at NeurIPS, ICML, ICLR. Go from GPU fundamentals to a conference-ready research paper with 1:1 asynchronous mentorship on the Vizuara Platform.</p>
             <div class="hero-btns animate">
                 <a href="https://vizuara.ai/courses/course_20006042" target="_blank" class="btn btn-primary">Enroll Now &mdash; &#x20B9;95,000</a>
