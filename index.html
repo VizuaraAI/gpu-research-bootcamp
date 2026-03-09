@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPU Engineer's Research Bootcamp | Vizuara AI Labs</title>
+    <meta name="description" content="Master 5D Parallelism and publish at NeurIPS, ICML, ICLR. 12 live lectures, 15 research frontiers, 1:1 mentorship. By Vizuara AI Labs.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0a;
+            --fg: #f2f2f2;
+            --card: #121212;
+            --card-hover: #1a1a1a;
+            --border: #262626;
+            --muted: #1f1f1f;
+            --muted-fg: #a3a3a3;
+            --primary: #00d46a;
+            --primary-fg: #000;
+            --secondary: #00c8e6;
+            --glow-opacity: 0.15;
+            --grid-color: rgba(255,255,255,0.03);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg);
+            color: var(--fg);
+            font-family: 'Inter', system-ui, sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        /* Grid background */
+        .grid-bg {
+            background-image:
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        /* Typography */
+        h1, h2, h3 { font-family: 'Instrument Serif', serif; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Layout */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        .section { padding: 100px 0; }
+
+        /* Glow effects */
+        .glow-green {
+            box-shadow: 0 0 20px rgba(0,212,106,var(--glow-opacity)),
+                        0 0 60px rgba(0,212,106,calc(var(--glow-opacity)/3));
+        }
+        .glow-cyan {
+            box-shadow: 0 0 20px rgba(0,200,230,var(--glow-opacity)),
+                        0 0 60px rgba(0,200,230,calc(var(--glow-opacity)/3));
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: var(--primary-fg);
+        }
+        .btn-primary:hover {
+            box-shadow: 0 0 25px rgba(0,212,106,0.3), 0 0 50px rgba(0,212,106,0.15);
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: transparent;
+            color: var(--fg);
+            border: 1px solid var(--border);
+        }
+        .btn-secondary:hover {
+            border-color: rgba(0,212,106,0.5);
+            background: var(--card);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            border-color: rgba(0,212,106,0.3);
+            transform: translateY(-4px);
+        }
+
+        /* Tags */
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .tag-green { background: rgba(0,212,106,0.15); color: var(--primary); }
+        .tag-cyan { background: rgba(0,200,230,0.15); color: var(--secondary); }
+        .tag-red { background: rgba(255,80,80,0.15); color: #ff5050; }
+
+        /* Animations */
+        @keyframes fade-in-up {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate { opacity: 0; }
+        .animate.visible {
+            animation: fade-in-up 0.6s ease forwards;
+        }
+
+        /* Blur orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .orb-green {
+            background: rgba(0,212,106,0.08);
+            width: 400px; height: 400px;
+        }
+        .orb-cyan {
+            background: rgba(0,200,230,0.06);
+            width: 350px; height: 350px;
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 120px 0 80px;
+            overflow: hidden;
+        }
+        .hero .orb-green { top: -100px; right: -100px; }
+        .hero .orb-cyan { bottom: -50px; left: -100px; }
+        .hero-content { position: relative; z-index: 1; text-align: center; max-width: 900px; margin: 0 auto; }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            border-radius: 100px;
+            border: 1px solid rgba(0,212,106,0.3);
+            background: rgba(0,212,106,0.08);
+            color: var(--primary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 32px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        .hero-badge .dot {
+            width: 8px; height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+        }
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            line-height: 1.1;
+            margin-bottom: 24px;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--muted-fg);
+            max-width: 650px;
+            margin: 0 auto 40px;
+        }
+        .hero-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+        .hero-meta {
+            display: flex; gap: 40px; justify-content: center; margin-top: 60px; flex-wrap: wrap;
+        }
+        .hero-meta-item { text-align: center; }
+        .hero-meta-item .value {
+            font-size: 1.5rem; font-weight: 700; color: var(--primary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .hero-meta-item .label { font-size: 0.85rem; color: var(--muted-fg); margin-top: 4px; }
+
+        /* ===== WHY THIS BOOTCAMP ===== */
+        .dimension-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 48px;
+        }
+        .dimension-card {
+            text-align: center;
+            padding: 32px 20px;
+        }
+        .dimension-card .icon {
+            width: 56px; height: 56px;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 1.5rem;
+            background: rgba(0,212,106,0.1);
+            border: 1px solid rgba(0,212,106,0.2);
+        }
+        .dimension-card h3 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+        .dimension-card .full-name {
+            font-size: 0.95rem;
+            color: var(--fg);
+            margin-bottom: 8px;
+        }
+        .dimension-card p {
+            font-size: 0.85rem;
+            color: var(--muted-fg);
+        }
+
+        /* ===== SECTION HEADERS ===== */
+        .section-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            line-height: 1.2;
+            margin-bottom: 16px;
+        }
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: var(--muted-fg);
+            max-width: 650px;
+        }
+        .section-header-center {
+            text-align: center;
+        }
+        .section-header-center .section-subtitle {
+            margin: 0 auto;
+        }
+
+        /* ===== PHASE 1: LECTURES ===== */
+        .lectures-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 16px;
+            margin-top: 48px;
+        }
+        .lecture-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+        }
+        .lecture-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--primary);
+            background: rgba(0,212,106,0.1);
+            border-radius: 8px;
+            min-width: 36px; height: 36px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .lecture-item h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .lecture-item p {
+            font-size: 0.82rem;
+            color: var(--muted-fg);
+        }
+
+        /* ===== PHASE 2: RESEARCH JOURNEY ===== */
+        .journey-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 48px;
+        }
+        .journey-card {
+            position: relative;
+            padding: 36px 28px;
+        }
+        .journey-card .step-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 3rem;
+            font-weight: 700;
+            color: rgba(0,212,106,0.1);
+            position: absolute;
+            top: 16px;
+            right: 20px;
+        }
+        .journey-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            color: var(--fg);
+        }
+        .journey-card p {
+            color: var(--muted-fg);
+            font-size: 0.95rem;
+        }
+        .journey-card ul {
+            margin-top: 12px;
+            list-style: none;
+            padding: 0;
+        }
+        .journey-card ul li {
+            font-size: 0.9rem;
+            color: var(--muted-fg);
+            padding: 6px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        .journey-card ul li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+        }
+
+        /* ===== 15 RESEARCH FRONTIERS ===== */
+        .frontiers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 20px;
+            margin-top: 48px;
+        }
+        .frontier-card {
+            padding: 28px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .frontier-card .frontier-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--muted-fg);
+            margin-bottom: 8px;
+        }
+        .frontier-card h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        .frontier-card .core-idea {
+            font-size: 0.88rem;
+            color: var(--muted-fg);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+        .frontier-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+        .frontier-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border);
+            padding-top: 12px;
+            margin-top: 12px;
+        }
+        .frontier-meta .target {
+            font-size: 0.8rem;
+            color: var(--secondary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Expanded state */
+        .frontier-card .expanded-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+        .frontier-card.active .expanded-content {
+            max-height: 500px;
+        }
+        .frontier-card .expand-icon {
+            transition: transform 0.3s ease;
+            color: var(--muted-fg);
+            font-size: 0.85rem;
+        }
+        .frontier-card.active .expand-icon {
+            transform: rotate(180deg);
+        }
+
+        /* ===== RESEARCH BOOK ===== */
+        .book-section {
+            position: relative;
+        }
+        .book-card {
+            display: flex;
+            align-items: center;
+            gap: 48px;
+            padding: 48px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .book-preview {
+            flex-shrink: 0;
+            width: 200px;
+            height: 260px;
+            background: linear-gradient(135deg, #1a2a1a 0%, #0a1a2a 100%);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 24px;
+        }
+        .book-preview .book-icon { font-size: 2.5rem; margin-bottom: 12px; }
+        .book-preview .book-title {
+            font-family: 'Instrument Serif', serif;
+            font-size: 1rem;
+            color: var(--fg);
+            line-height: 1.3;
+        }
+        .book-preview .book-sub {
+            font-size: 0.75rem;
+            color: var(--muted-fg);
+            margin-top: 8px;
+        }
+        .book-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+        }
+        .book-info p {
+            color: var(--muted-fg);
+            margin-bottom: 16px;
+        }
+        .book-stats {
+            display: flex;
+            gap: 32px;
+            margin: 20px 0;
+        }
+        .book-stat .num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .book-stat .desc {
+            font-size: 0.8rem;
+            color: var(--muted-fg);
+        }
+
+        /* ===== CONFERENCES TIMELINE ===== */
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 48px auto 0;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 24px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+        }
+        .timeline-item {
+            position: relative;
+            padding-left: 64px;
+            margin-bottom: 32px;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: 16px;
+            top: 8px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--bg);
+            border: 2px solid var(--primary);
+        }
+        .timeline-dot.urgent {
+            background: var(--primary);
+            box-shadow: 0 0 12px rgba(0,212,106,0.4);
+        }
+        .timeline-item h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 600;
+        }
+        .timeline-item .date {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--secondary);
+        }
+        .timeline-item .days {
+            font-size: 0.85rem;
+            color: var(--muted-fg);
+        }
+        .timeline-item p {
+            font-size: 0.9rem;
+            color: var(--muted-fg);
+            margin-top: 4px;
+        }
+
+        /* ===== INSTRUCTOR ===== */
+        .instructor-card {
+            display: flex;
+            gap: 48px;
+            align-items: center;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 48px;
+        }
+        .instructor-avatar {
+            flex-shrink: 0;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid var(--border);
+        }
+        .instructor-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Hero background image */
+        .hero-bg-img {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .hero-bg-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.25;
+        }
+        .hero-bg-img::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to bottom, rgba(10,10,10,0.3) 0%, rgba(10,10,10,0.95) 80%);
+        }
+        .instructor-info h3 {
+            font-size: 1.8rem;
+            margin-bottom: 4px;
+        }
+        .instructor-info .title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+        .instructor-info p {
+            color: var(--muted-fg);
+            margin-bottom: 12px;
+        }
+        .credentials { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+        .credential {
+            padding: 6px 14px;
+            border-radius: 8px;
+            background: var(--muted);
+            font-size: 0.82rem;
+            color: var(--muted-fg);
+            border: 1px solid var(--border);
+        }
+
+        /* ===== PRICING ===== */
+        .pricing-card {
+            max-width: 560px;
+            margin: 48px auto 0;
+            padding: 48px;
+            text-align: center;
+            border-color: rgba(0,212,106,0.3);
+        }
+        .pricing-card .price {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--fg);
+            margin: 16px 0;
+        }
+        .pricing-card .price .currency {
+            font-size: 1.5rem;
+            vertical-align: top;
+            color: var(--muted-fg);
+        }
+        .pricing-features {
+            list-style: none;
+            text-align: left;
+            margin: 32px 0;
+            padding: 0;
+        }
+        .pricing-features li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.95rem;
+            color: var(--muted-fg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .pricing-features li .check {
+            color: var(--primary);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .pricing-card .btn { width: 100%; margin-top: 8px; }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 48px 0;
+            text-align: center;
+        }
+        .footer-logo {
+            font-family: 'Instrument Serif', serif;
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+        .footer p {
+            font-size: 0.85rem;
+            color: var(--muted-fg);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .section { padding: 64px 0; }
+            .hero { padding: 100px 0 60px; }
+            .hero-meta { gap: 24px; }
+            .book-card { flex-direction: column; text-align: center; padding: 32px; }
+            .book-stats { justify-content: center; }
+            .instructor-card { flex-direction: column; text-align: center; padding: 32px; }
+            .credentials { justify-content: center; }
+            .frontiers-grid { grid-template-columns: 1fr; }
+            .lectures-grid { grid-template-columns: 1fr; }
+            .timeline::before { left: 16px; }
+            .timeline-item { padding-left: 48px; }
+            .timeline-dot { left: 8px; }
+        }
+
+        /* Nav */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 16px 0;
+            background: rgba(10,10,10,0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+        .nav-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-logo {
+            font-family: 'Instrument Serif', serif;
+            font-size: 1.3rem;
+        }
+        .nav-links { display: flex; gap: 32px; align-items: center; }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--muted-fg);
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--fg); }
+        .nav-cta {
+            padding: 8px 20px !important;
+            font-size: 0.85rem !important;
+        }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+        }
+
+        .divider {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            margin: 48px auto;
+        }
+    </style>
+</head>
+<body class="grid-bg">
+
+    <!-- Nav -->
+    <nav class="nav">
+        <div class="container nav-inner">
+            <div class="nav-logo"><span class="gradient-text">Vizuara</span> AI Labs</div>
+            <div class="nav-links">
+                <a href="#why">Why This Bootcamp</a>
+                <a href="#lectures">Lectures</a>
+                <a href="#research">Research</a>
+                <a href="#frontiers">15 Frontiers</a>
+                <a href="#instructor">Instructor</a>
+                <a href="https://vizuara.ai/courses/course_20006042" target="_blank" class="btn btn-primary nav-cta">Enroll Now</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero" id="hero">
+        <div class="hero-bg-img"><img src="gpu-hero.jpg" alt="GPU chip"></div>
+        <div class="orb orb-green"></div>
+        <div class="orb orb-cyan"></div>
+        <div class="container hero-content">
+            <div class="hero-badge animate">
+                <span class="dot"></span>
+                Applications Open
+            </div>
+            <h1 class="animate"><span class="gradient-text">GPU Engineer's</span><br>Research Bootcamp</h1>
+            <p class="animate">Master 5D Parallelism. Publish at NeurIPS, ICML, ICLR. Go from GPU fundamentals to a conference-ready research paper with 1:1 mentorship.</p>
+            <div class="hero-btns animate">
+                <a href="https://vizuara.ai/courses/course_20006042" target="_blank" class="btn btn-primary">Enroll Now &mdash; &#x20B9;95,000</a>
+                <a href="#frontiers" class="btn btn-secondary">Explore 15 Research Frontiers</a>
+            </div>
+            <div class="hero-meta animate">
+                <div class="hero-meta-item">
+                    <div class="value">12</div>
+                    <div class="label">Live Lectures</div>
+                </div>
+                <div class="hero-meta-item">
+                    <div class="value">30+</div>
+                    <div class="label">Hours of Content</div>
+                </div>
+                <div class="hero-meta-item">
+                    <div class="value">15</div>
+                    <div class="label">Research Frontiers</div>
+                </div>
+                <div class="hero-meta-item">
+                    <div class="value">4</div>
+                    <div class="label">Months Total</div>
+                </div>
+                <div class="hero-meta-item">
+                    <div class="value">1:1</div>
+                    <div class="label">Mentorship</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why This Bootcamp -->
+    <section class="section" id="why">
+        <div class="container">
+            <div class="section-header-center animate">
+                <div class="section-label">Why This Bootcamp</div>
+                <h2 class="section-title">Master the <span class="gradient-text">5 Dimensions</span> of Modern Parallelism</h2>
+                <p class="section-subtitle">Every frontier AI model &mdash; GPT-5, DeepSeek-V3, Llama 4 &mdash; is trained using 5D Parallelism. This bootcamp teaches you to build, optimize, and research at the intersection of parallelism and modern AI.</p>
+            </div>
+            <div class="dimension-grid">
+                <div class="card dimension-card animate">
+                    <div class="icon">&#x1F9E9;</div>
+                    <h3>TP</h3>
+                    <div class="full-name">Tensor Parallelism</div>
+                    <p>Split weight matrices across GPUs for intra-layer parallelism</p>
+                </div>
+                <div class="card dimension-card animate">
+                    <div class="icon">&#x1F4CA;</div>
+                    <h3>DP</h3>
+                    <div class="full-name">Data Parallelism</div>
+                    <p>Replicate model, split data batches across workers</p>
+                </div>
+                <div class="card dimension-card animate">
+                    <div class="icon">&#x1F504;</div>
+                    <h3>PP</h3>
+                    <div class="full-name">Pipeline Parallelism</div>
+                    <p>Split model layers across stages for inter-layer parallelism</p>
+                </div>
+                <div class="card dimension-card animate">
+                    <div class="icon">&#x1F4DD;</div>
+                    <h3>CP/SP</h3>
+                    <div class="full-name">Context / Sequence Parallelism</div>
+                    <p>Split along sequence length for long-context processing</p>
+                </div>
+                <div class="card dimension-card animate">
+                    <div class="icon">&#x1F916;</div>
+                    <h3>EP</h3>
+                    <div class="full-name">Expert Parallelism</div>
+                    <p>Distribute MoE experts across GPUs for sparse models</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Phase 1: Lectures -->
+    <section class="section" id="lectures" style="background: var(--muted);">
+        <div class="container">
+            <div class="section-header-center animate">
+                <div class="section-label">Phase 1 &mdash; 1.5 Months</div>
+                <h2 class="section-title">Lecture Series: <span class="gradient-text">30+ Hours</span> of Live Teaching</h2>
+                <p class="section-subtitle">12 lectures over 1.5 months covering GPU programming fundamentals through cutting-edge parallelism strategies, taught live by Dr. Rajat Dandekar.</p>
+            </div>
+            <div class="lectures-grid">
+                <div class="card lecture-item animate">
+                    <div class="lecture-num">01</div>
+                    <div>
+                        <h3>GPU Architecture & CUDA Fundamentals</h3>
+                        <p>Warps, memory hierarchy, SM occupancy, profiling with Nsight</p>
+                    </div>
+                </div>
+                <div class="card lecture-item animate">
+                    <div class="lecture-num">02</div>
+                    <div>
+                        <h3>Triton & Custom GPU Kernels</h3>
+                        <p>Writing high-performance GPU kernels with OpenAI Triton</p>
+                    </div>
+                </div>
+                <div class="card lecture-item animate">
+                    <div class="lecture-num">03</div>
+                    <div>
+                        <h3>NCCL & Distributed Communication</h3>
+                        <p>All-reduce, all-gather, ring topologies, NCCL internals</p>
+                    </div>
+                </div>
+                <div class="card lecture-item animate">
+                    <div class="lecture-num">04</div>
+                    <div>
+                        <h3>Data Parallelism & ZeRO</h3>
+                        <p>DDP, FSDP, ZeRO stages 1-3, gradient compression</p>
+                    </div>
+                </div>
+                <div class="card lecture-item animate">
+                    <div class="lecture-num">05</div>
+                    <div>
+                        <h3>Tensor Parallelism</h3>
+                        <p>Megatron-LM style column/row splitting, async TP</p>
+                    </div>
+                </div>
+                <div class="card lecture-item animate">
+                    <div class="lecture-num">06</div>
+                    <div>
+                        <h3>Pipeline Parallelism</h3>
+                        <p>GPipe, 1F1B, zero-bubble schedules, interleaving</p>
+                    </div>
+                </div>
+                <div class="card lecture-item animate">
+                    <div class="lecture-num">07</div>
+                    <div>
+                        <h3>Context & Sequence Parallelism</h3>
+                        <p>Ring Attention, Striped Attention, Ulysses for long contexts</p>
+                    </div>
+                </div>
+                <div class="card lecture-item animate">
+                    <div class="lecture-num">08</div>
+                    <div>
+                        <h3>Expert Parallelism & MoE</h3>
+                        <p>All-to-all routing, load balancing, DeepSeek-V3 architecture</p>
+                    </div>
+                </div>
+                <div class="card lecture-item animate">
+                    <div class="lecture-num">09</div>
+                    <div>
+                        <h3>5D Parallelism Integration</h3>
+                        <p>Combining TP+DP+PP+CP+EP, Megatron-LM 5D config</p>
+                    </div>
+                </div>
+                <div class="card lecture-item animate">
+                    <div class="lecture-num">10</div>
+                    <div>
+                        <h3>Diffusion Language Models</h3>
+                        <p>MDLM, Mercury, SEDD &mdash; parallel token generation at scale</p>
+                    </div>
+                </div>
+                <div class="card lecture-item animate">
+                    <div class="lecture-num">11</div>
+                    <div>
+                        <h3>Speculative Decoding & Inference</h3>
+                        <p>Draft/verify paradigm, distributed inference, KV-cache parallelism</p>
+                    </div>
+                </div>
+                <div class="card lecture-item animate">
+                    <div class="lecture-num">12</div>
+                    <div>
+                        <h3>Research Methods & Paper Writing</h3>
+                        <p>Experiment design, benchmarking, writing for NeurIPS/ICML</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Phase 2: Research Journey -->
+    <section class="section" id="research">
+        <div class="container">
+            <div class="section-header-center animate">
+                <div class="section-label">Phase 2 &mdash; 2.5 Months</div>
+                <h2 class="section-title">Your <span class="gradient-text">Research Journey</span></h2>
+                <p class="section-subtitle">Over 2.5 months, go from selecting a frontier research topic to submitting a conference-ready paper &mdash; with dedicated 1:1 mentorship at every step.</p>
+            </div>
+            <div class="journey-grid">
+                <div class="card journey-card animate">
+                    <div class="step-num">01</div>
+                    <h3>Research Topic Selection</h3>
+                    <p>Choose from 15 frontier research directions at the intersection of 5D parallelism and modern AI breakthroughs.</p>
+                    <ul>
+                        <li>Each topic is a standalone 3&ndash;6 month research project</li>
+                        <li>Topics marked High Novelty have zero existing published work</li>
+                        <li>Matched to your background and interests</li>
+                    </ul>
+                </div>
+                <div class="card journey-card animate">
+                    <div class="step-num">02</div>
+                    <h3>Full Paper Writing Process</h3>
+                    <p>Guided through every stage of producing a publication-quality research paper.</p>
+                    <ul>
+                        <li>Literature survey and related work positioning</li>
+                        <li>Abstract, methodology, experiment design</li>
+                        <li>Results analysis and paper formatting</li>
+                        <li>Camera-ready preparation and submission</li>
+                    </ul>
+                </div>
+                <div class="card journey-card animate">
+                    <div class="step-num">03</div>
+                    <h3>1:1 Mentorship</h3>
+                    <p>Synchronous reviewer-style mentorship through a dedicated communication platform.</p>
+                    <ul>
+                        <li>Regular check-ins on research progress</li>
+                        <li>Detailed feedback on paper drafts</li>
+                        <li>Guidance on experiment design and GPU profiling</li>
+                        <li>Conference submission strategy</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 15 Research Frontiers -->
+    <section class="section" id="frontiers" style="background: var(--muted);">
+        <div class="container">
+            <div class="section-header-center animate">
+                <div class="section-label">15 Research Frontiers</div>
+                <h2 class="section-title"><span class="gradient-text">5D Parallelism</span> Meets Modern AI</h2>
+                <p class="section-subtitle">Each topic combines a modern AI breakthrough with a parallelism dimension to yield a novel research direction suitable for top venues.</p>
+            </div>
+            <div class="frontiers-grid" id="frontiers-grid">
+
+                <!-- Topic 1 -->
+                <div class="card frontier-card animate" onclick="toggleFrontier(this)">
+                    <div class="frontier-num">FRONTIER 01</div>
+                    <h3>Parallelism-Aware Training of Diffusion Language Models</h3>
+                    <div class="frontier-tags">
+                        <span class="tag tag-green">TP</span>
+                        <span class="tag tag-green">DP</span>
+                        <span class="tag tag-red">High Novelty</span>
+                    </div>
+                    <div class="core-idea">Design tensor- and data-parallelism strategies that exploit the parallel token-generation structure of DLMs during both training and inference.</div>
+                    <div class="expanded-content">
+                        <p style="font-size:0.85rem;color:var(--muted-fg);margin-top:12px;">No published work co-designs TP/DP strategies for diffusion-based language model training. Mercury achieves 10x faster inference on H100s, but training parallelism is unexplored.</p>
+                    </div>
+                    <div class="frontier-meta">
+                        <span class="target">NeurIPS / ICML</span>
+                        <span class="expand-icon">&#x25BC;</span>
+                    </div>
+                </div>
+
+                <!-- Topic 2 -->
+                <div class="card frontier-card animate" onclick="toggleFrontier(this)">
+                    <div class="frontier-num">FRONTIER 02</div>
+                    <h3>MoE Meets Diffusion LLMs: Expert Routing for Parallel Token Denoising</h3>
+                    <div class="frontier-tags">
+                        <span class="tag tag-green">EP</span>
+                        <span class="tag tag-green">TP</span>
+                        <span class="tag tag-red">High Novelty</span>
+                    </div>
+                    <div class="core-idea">Design MoE architectures for DLMs where expert selection is conditioned on both token identity and denoising timestep, enabling timestep-aware expert specialization.</div>
+                    <div class="expanded-content">
+                        <p style="font-size:0.85rem;color:var(--muted-fg);margin-top:12px;">No published work combines MoE with diffusion-based text generation. Could yield the first trillion-parameter DLM trainable on current hardware.</p>
+                    </div>
+                    <div class="frontier-meta">
+                        <span class="target">ICLR / NeurIPS</span>
+                        <span class="expand-icon">&#x25BC;</span>
+                    </div>
+                </div>
+
+                <!-- Topic 3 -->
+                <div class="card frontier-card animate" onclick="toggleFrontier(this)">
+                    <div class="frontier-num">FRONTIER 03</div>
+                    <h3>Adaptive Context Parallelism with Dynamic Sparse Attention</h3>
+                    <div class="frontier-tags">
+                        <span class="tag tag-cyan">CP</span>
+                        <span class="tag tag-cyan">SP</span>
+                        <span class="tag tag-red">High Novelty</span>
+                    </div>
+                    <div class="core-idea">Dynamically adjust CP degree per layer based on runtime attention sparsity patterns, allocating more GPUs to dense-attention layers and fewer to sparse ones.</div>
+                    <div class="expanded-content">
+                        <p style="font-size:0.85rem;color:var(--muted-fg);margin-top:12px;">Adaptive CP could save 30&ndash;50% communication for 1M+ token sequences. RingX (SC25) achieves 3.4x speedup but still uses uniform partitioning.</p>
+                    </div>
+                    <div class="frontier-meta">
+                        <span class="target">NeurIPS / ICML</span>
+                        <span class="expand-icon">&#x25BC;</span>
+                    </div>
+                </div>
+
+                <!-- Topic 4 -->
+                <div class="card frontier-card animate" onclick="toggleFrontier(this)">
+                    <div class="frontier-num">FRONTIER 04</div>
+                    <h3>Speculative Decoding for Discrete Diffusion Models</h3>
+                    <div class="frontier-tags">
+                        <span class="tag tag-green">DP</span>
+                        <span class="tag tag-green">TP</span>
+                        <span class="tag tag-red">High Novelty</span>
+                    </div>
+                    <div class="core-idea">Adapt speculative decoding to discrete diffusion LLMs: a small "draft denoiser" predicts token masks, a large "verifier denoiser" confirms or corrects across multiple GPUs.</div>
+                    <div class="expanded-content">
+                        <p style="font-size:0.85rem;color:var(--muted-fg);margin-top:12px;">Combines two of the hottest topics in ML systems. Could reduce denoising steps from 10&ndash;100 down to 3&ndash;5 steps.</p>
+                    </div>
+                    <div class="frontier-meta">
+                        <span class="target">ICML / ICLR</span>
+                        <span class="expand-icon">&#x25BC;</span>
+                    </div>
+                </div>
+
+                <!-- Topic 5 -->
+                <div class="card frontier-card animate" onclick="toggleFrontier(this)">
+                    <div class="frontier-num">FRONTIER 05</div>
+                    <h3>Carbon-Aware Dynamic Parallelism Reconfiguration</h3>
+                    <div class="frontier-tags">
+                        <span class="tag tag-green">All 5D</span>
+                        <span class="tag tag-red">High Novelty</span>
+                    </div>
+                    <div class="core-idea">Build a system that continuously monitors grid carbon intensity and dynamically reconfigures the parallelism strategy to minimize carbon footprint while maintaining throughput SLAs.</div>
+                    <div class="expanded-content">
+                        <p style="font-size:0.85rem;color:var(--muted-fg);margin-top:12px;">Training a single frontier model emits 300+ tonnes of CO&#x2082;. No work reconfigures parallelism dimensions based on energy signals. Highly interdisciplinary (systems + sustainability).</p>
+                    </div>
+                    <div class="frontier-meta">
+                        <span class="target">NeurIPS / ICLR (Green AI)</span>
+                        <span class="expand-icon">&#x25BC;</span>
+                    </div>
+                </div>
+
+                <!-- Topic 6 -->
+                <div class="card frontier-card animate" onclick="toggleFrontier(this)">
+                    <div class="frontier-num">FRONTIER 06</div>
+                    <h3>Heterogeneous Expert Parallelism: Right-Sizing Experts to GPUs</h3>
+                    <div class="frontier-tags">
+                        <span class="tag tag-green">EP</span>
+                        <span class="tag tag-green">DP</span>
+                    </div>
+                    <div class="core-idea">Introduce heterogeneous expert architectures where expert capacity is matched to the GPU it runs on &mdash; larger experts on faster GPUs, smaller on slower ones.</div>
+                    <div class="expanded-content">
+                        <p style="font-size:0.85rem;color:var(--muted-fg);margin-top:12px;">Could unlock MoE training for organizations that cannot afford homogeneous H100 clusters. No existing work adapts the model itself to hardware heterogeneity.</p>
+                    </div>
+                    <div class="frontier-meta">
+                        <span class="target">NeurIPS / MLSys</span>
+                        <span class="expand-icon">&#x25BC;</span>
+                    </div>
+                </div>
+
+                <!-- Topic 7 -->
+                <div class="card frontier-card animate" onclick="toggleFrontier(this)">
+                    <div class="frontier-num">FRONTIER 07</div>
+                    <h3>Distributed Parallel Reasoning with Speculative Verification</h3>
+                    <div class="frontier-tags">
+                        <span class="tag tag-green">DP</span>
+                        <span class="tag tag-green">PP</span>
+                    </div>
+                    <div class="core-idea">Distribute reasoning across multiple GPUs: a planner decomposes problems into sub-tasks, executor GPUs solve in parallel, a verifier speculatively checks solutions.</div>
+                    <div class="expanded-content">
+                        <p style="font-size:0.85rem;color:var(--muted-fg);margin-top:12px;">No work distributes reasoning across a GPU cluster. Reasoning models produce 10K&ndash;100K tokens per query &mdash; distributed inference is essential.</p>
+                    </div>
+                    <div class="frontier-meta">
+                        <span class="target">ICLR / NeurIPS</span>
+                        <span class="expand-icon">&#x25BC;</span>
+                    </div>
+                </div>
+
+                <!-- Topic 8 -->
+                <div class="card frontier-card animate" onclick="toggleFrontier(this)">
+                    <div class="frontier-num">FRONTIER 08</div>
+                    <h3>Zero-Bubble Pipeline Parallelism for Diffusion Model Training</h3>
+                    <div class="frontier-tags">
+                        <span class="tag tag-green">PP</span>
+                        <span class="tag tag-green">DP</span>
+                        <span class="tag tag-red">High Novelty</span>
+                    </div>
+                    <div class="core-idea">Design pipeline schedules optimized for diffusion model training, exploiting their fundamentally different computation graph (denoising + score matching loss).</div>
+                    <div class="expanded-content">
+                        <p style="font-size:0.85rem;color:var(--muted-fg);margin-top:12px;">Better PP could reduce training cost of Stable Diffusion 3, FLUX, and Sora-scale models by 20&ndash;30%. Zero-bubble PP assumes autoregressive models.</p>
+                    </div>
+                    <div class="frontier-meta">
+                        <span class="target">ICML / NeurIPS</span>
+                        <span class="expand-icon">&#x25BC;</span>
+                    </div>
+                </div>
+
+                <!-- Topic 9 -->
+                <div class="card frontier-card animate" onclick="toggleFrontier(this)">
+                    <div class="frontier-num">FRONTIER 09</div>
+                    <h3>Communication-Free Expert Parallelism via Learned Expert Compression</h3>
+                    <div class="frontier-tags">
+                        <span class="tag tag-green">EP</span>
+                        <span class="tag tag-green">TP</span>
+                    </div>
+                    <div class="core-idea">Train a lightweight autoencoder to compress token representations during expert dispatch, reducing all-to-all communication by 4&ndash;8x without quality loss.</div>
+                    <div class="expanded-content">
+                        <p style="font-size:0.85rem;color:var(--muted-fg);margin-top:12px;">All-to-all communication consumes 40%+ of MoE training time at scale. Could enable MoE training on clusters with slower interconnects (Ethernet instead of InfiniBand).</p>
+                    </div>
+                    <div class="frontier-meta">
+                        <span class="target">ICML / NeurIPS</span>
+                        <span class="expand-icon">&#x25BC;</span>
+                    </div>
+                </div>
+
+                <!-- Topic 10 -->
+                <div class="card frontier-card animate" onclick="toggleFrontier(this)">
+                    <div class="frontier-num">FRONTIER 10</div>
+                    <h3>Ring Attention + Speculative Decoding for Million-Token Inference</h3>
+                    <div class="frontier-tags">
+                        <span class="tag tag-cyan">CP</span>
+                        <span class="tag tag-green">DP</span>
+                    </div>
+                    <div class="core-idea">Combine Ring Attention's distributed KV-cache with speculative decoding: draft tokens generated locally while the ring asynchronously prefetches KV-cache segments for verification.</div>
+                    <div class="expanded-content">
+                        <p style="font-size:0.85rem;color:var(--muted-fg);margin-top:12px;">Speculative decoding assumes KV-cache fits on one GPU &mdash; impossible for 1M+ contexts. Long-context inference is a major deployment challenge.</p>
+                    </div>
+                    <div class="frontier-meta">
+                        <span class="target">NeurIPS / ICLR</span>
+                        <span class="expand-icon">&#x25BC;</span>
+                    </div>
+                </div>
+
+                <!-- Topic 11 -->
+                <div class="card frontier-card animate" onclick="toggleFrontier(this)">
+                    <div class="frontier-num">FRONTIER 11</div>
+                    <h3>Async RLHF with Disaggregated Expert-Parallel Reward Models</h3>
+                    <div class="frontier-tags">
+                        <span class="tag tag-green">EP</span>
+                        <span class="tag tag-green">PP</span>
+                    </div>
+                    <div class="core-idea">Use MoE-based reward models with expert parallelism, disaggregated from the policy model's GPU pool, enabling asynchronous reward scoring overlapped with training.</div>
+                    <div class="expanded-content">
+                        <p style="font-size:0.85rem;color:var(--muted-fg);margin-top:12px;">RLHF spends 80% of time on generation. MoE reward models could score different quality aspects (helpfulness, safety, style) via different experts on different GPUs.</p>
+                    </div>
+                    <div class="frontier-meta">
+                        <span class="target">ICML / NeurIPS</span>
+                        <span class="expand-icon">&#x25BC;</span>
+                    </div>
+                </div>
+
+                <!-- Topic 12 -->
+                <div class="card frontier-card animate" onclick="toggleFrontier(this)">
+                    <div class="frontier-num">FRONTIER 12</div>
+                    <h3>Scaling Test-Time Training Layers via Context Parallelism</h3>
+                    <div class="frontier-tags">
+                        <span class="tag tag-cyan">CP</span>
+                        <span class="tag tag-cyan">SP</span>
+                    </div>
+                    <div class="core-idea">Scale TTT layers to million-token contexts using context parallelism with large-chunk gradient aggregation across GPUs.</div>
+                    <div class="expanded-content">
+                        <p style="font-size:0.85rem;color:var(--muted-fg);margin-top:12px;">TTT layers have linear complexity but existing methods achieve less than 5% GPU utilization. Combining TTT with Transformer parallelism strategies is unexplored.</p>
+                    </div>
+                    <div class="frontier-meta">
+                        <span class="target">ICLR / NeurIPS</span>
+                        <span class="expand-icon">&#x25BC;</span>
+                    </div>
+                </div>
+
+                <!-- Topic 13 -->
+                <div class="card frontier-card animate" onclick="toggleFrontier(this)">
+                    <div class="frontier-num">FRONTIER 13</div>
+                    <h3>Topology-Aware Expert Placement for Disaggregated MoE Serving</h3>
+                    <div class="frontier-tags">
+                        <span class="tag tag-green">EP</span>
+                        <span class="tag tag-green">PP</span>
+                    </div>
+                    <div class="core-idea">Learn a topology-aware expert placement policy from production routing traces, using graph partitioning to minimize cross-node communication while maintaining load balance.</div>
+                    <div class="expanded-content">
+                        <p style="font-size:0.85rem;color:var(--muted-fg);margin-top:12px;">DeepSeek-V3's 256 experts create ~4.4B possible routing combinations. Lmsys reported that expert placement significantly impacts throughput on 96 H100s.</p>
+                    </div>
+                    <div class="frontier-meta">
+                        <span class="target">OSDI / NeurIPS</span>
+                        <span class="expand-icon">&#x25BC;</span>
+                    </div>
+                </div>
+
+                <!-- Topic 14 -->
+                <div class="card frontier-card animate" onclick="toggleFrontier(this)">
+                    <div class="frontier-num">FRONTIER 14</div>
+                    <h3>Energy-Aware Expert Routing in Mixture-of-Experts Models</h3>
+                    <div class="frontier-tags">
+                        <span class="tag tag-green">EP</span>
+                        <span class="tag tag-green">DP</span>
+                        <span class="tag tag-red">High Novelty</span>
+                    </div>
+                    <div class="core-idea">Add an energy cost term to the MoE routing decision: tokens are routed considering both quality (affinity) and the real-time energy cost of the GPU hosting each expert.</div>
+                    <div class="expanded-content">
+                        <p style="font-size:0.85rem;color:var(--muted-fg);margin-top:12px;">No existing work incorporates energy signals into MoE routing. Could reduce inference energy by 20&ndash;40% with minimal quality degradation. Aligns with the Green AI movement.</p>
+                    </div>
+                    <div class="frontier-meta">
+                        <span class="target">NeurIPS / ICLR (Green AI)</span>
+                        <span class="expand-icon">&#x25BC;</span>
+                    </div>
+                </div>
+
+                <!-- Topic 15 -->
+                <div class="card frontier-card animate" onclick="toggleFrontier(this)">
+                    <div class="frontier-num">FRONTIER 15</div>
+                    <h3>Unified Parallelism Search: AutoML for 5D Parallelism Configuration</h3>
+                    <div class="frontier-tags">
+                        <span class="tag tag-green">All 5D</span>
+                        <span class="tag tag-red">High Novelty</span>
+                    </div>
+                    <div class="core-idea">Formulate 5D parallelism configuration as a combinatorial optimization problem solved with a learned cost model + search algorithm across the full TP/DP/PP/CP/EP space.</div>
+                    <div class="expanded-content">
+                        <p style="font-size:0.85rem;color:var(--muted-fg);margin-top:12px;">For a 256-GPU cluster, there are thousands of valid configurations. Could become the "NAS for parallelism" &mdash; a foundational tool for the field. Alpa only searched 2D (TP&times;DP).</p>
+                    </div>
+                    <div class="frontier-meta">
+                        <span class="target">NeurIPS / OSDI / MLSys</span>
+                        <span class="expand-icon">&#x25BC;</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Research Book Download -->
+    <section class="section book-section" id="book">
+        <div class="container">
+            <div class="card book-card animate">
+                <div class="book-preview">
+                    <div class="book-icon">&#x1F4D6;</div>
+                    <div class="book-title">15 Research Frontiers in 5D Parallelism &amp; Modern AI</div>
+                    <div class="book-sub">Vizuara AI Labs &bull; March 2026</div>
+                </div>
+                <div class="book-info">
+                    <h3>The <span class="gradient-text">Research Book</span></h3>
+                    <p>A comprehensive guide covering all 15 frontier research topics. Each topic includes the core idea, why it's impactful, a suggested approach, key references, and target conferences.</p>
+                    <div class="book-stats">
+                        <div class="book-stat">
+                            <div class="num">15</div>
+                            <div class="desc">Research Topics</div>
+                        </div>
+                        <div class="book-stat">
+                            <div class="num">50+</div>
+                            <div class="desc">Paper References</div>
+                        </div>
+                        <div class="book-stat">
+                            <div class="num">18</div>
+                            <div class="desc">Pages</div>
+                        </div>
+                    </div>
+                    <a href="gpu_research_topics.pdf" target="_blank" class="btn btn-secondary">Download Research Book (PDF)</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Conference Timeline -->
+    <section class="section" id="conferences" style="background: var(--muted);">
+        <div class="container">
+            <div class="section-header-center animate">
+                <div class="section-label">Target Conferences</div>
+                <h2 class="section-title">Your <span class="gradient-text">Publication Timeline</span></h2>
+                <p class="section-subtitle">Target the world's top ML and systems venues. Our bootcamp is structured to align with these deadlines.</p>
+            </div>
+            <div class="timeline">
+                <div class="timeline-item animate">
+                    <div class="timeline-dot urgent"></div>
+                    <div class="date">Mar 26, 2026</div>
+                    <h3>SOSP 2026 <span style="color:var(--muted-fg);font-weight:400;">(Abstract)</span></h3>
+                    <p>Premier systems conference &bull; ~17 days away</p>
+                </div>
+                <div class="timeline-item animate">
+                    <div class="timeline-dot urgent"></div>
+                    <div class="date">Apr 1, 2026</div>
+                    <h3>SOSP 2026 <span style="color:var(--muted-fg);font-weight:400;">(Full Paper)</span></h3>
+                    <p>Full paper deadline &bull; ~23 days away</p>
+                </div>
+                <div class="timeline-item animate">
+                    <div class="timeline-dot urgent"></div>
+                    <div class="date">Apr 15, 2026</div>
+                    <h3>ASPLOS 2027 <span style="color:var(--muted-fg);font-weight:400;">(Spring Cycle)</span></h3>
+                    <p>Architecture &amp; systems &bull; ~37 days away</p>
+                </div>
+                <div class="timeline-item animate">
+                    <div class="timeline-dot"></div>
+                    <div class="date">~May 7, 2026</div>
+                    <h3>NeurIPS 2026</h3>
+                    <p>Top ML venue &bull; ~59 days away</p>
+                </div>
+                <div class="timeline-item animate">
+                    <div class="timeline-dot"></div>
+                    <div class="date">Apr&ndash;May 2026</div>
+                    <h3>ICML 2026 Workshops</h3>
+                    <p>Workshop papers &bull; Great entry point</p>
+                </div>
+                <div class="timeline-item animate">
+                    <div class="timeline-dot"></div>
+                    <div class="date">Aug&ndash;Sept 2026</div>
+                    <h3>NeurIPS 2026 Workshops</h3>
+                    <p>Workshop papers &bull; ~5&ndash;6 months away</p>
+                </div>
+                <div class="timeline-item animate">
+                    <div class="timeline-dot"></div>
+                    <div class="date">Sept 9, 2026</div>
+                    <h3>ASPLOS 2027 <span style="color:var(--muted-fg);font-weight:400;">(Fall Cycle)</span></h3>
+                    <p>Architecture &amp; systems &bull; ~184 days away</p>
+                </div>
+                <div class="timeline-item animate">
+                    <div class="timeline-dot"></div>
+                    <div class="date">~Oct 2026</div>
+                    <h3>MLSys 2027 / ICLR 2027</h3>
+                    <p>ML systems &amp; representation learning &bull; ~7 months away</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Instructor -->
+    <section class="section" id="instructor">
+        <div class="container">
+            <div class="section-header-center animate">
+                <div class="section-label">Your Instructor</div>
+                <h2 class="section-title">Learn from the <span class="gradient-text">Best</span></h2>
+            </div>
+            <div class="card instructor-card animate">
+                <div class="instructor-avatar"><img src="raj-pic.jpeg" alt="Dr. Rajat Dandekar"></div>
+                <div class="instructor-info">
+                    <h3>Dr. Rajat Dandekar</h3>
+                    <div class="title">M.IT, PhD &bull; Founder, Vizuara AI Labs</div>
+                    <p>Dr. Rajat Dandekar brings deep expertise in GPU systems, distributed computing, and AI research. With a background spanning MIT and IIT Madras, he has worked at the intersection of high-performance computing and machine learning.</p>
+                    <p>At Vizuara AI Labs, he leads research bootcamps that have helped students publish at top-tier venues and build careers in GPU engineering and AI research.</p>
+                    <div class="credentials">
+                        <span class="credential">M.IT</span>
+                        <span class="credential">PhD</span>
+                        <span class="credential">IIT Madras</span>
+                        <span class="credential">Vizuara AI Labs</span>
+                        <span class="credential">GPU Systems</span>
+                        <span class="credential">Distributed Computing</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="section" id="pricing" style="background: var(--muted);">
+        <div class="container">
+            <div class="section-header-center animate">
+                <div class="section-label">Pricing</div>
+                <h2 class="section-title">Invest in Your <span class="gradient-text">Research Career</span></h2>
+            </div>
+            <div class="card pricing-card glow-green animate">
+                <div class="section-label">Complete Bootcamp</div>
+                <div class="price"><span class="currency">&#x20B9;</span>95,000</div>
+                <p style="color:var(--muted-fg);font-size:0.95rem;">Everything you need to go from GPU fundamentals to a published research paper.</p>
+                <ul class="pricing-features">
+                    <li><span class="check">&#x2713;</span> 12 live lectures (30+ hours) on 5D Parallelism</li>
+                    <li><span class="check">&#x2713;</span> Choose from 15 frontier research topics</li>
+                    <li><span class="check">&#x2713;</span> Full paper writing process &mdash; abstract to submission</li>
+                    <li><span class="check">&#x2713;</span> 1:1 synchronous mentorship</li>
+                    <li><span class="check">&#x2713;</span> Research Book: 15 Frontiers in 5D Parallelism (PDF)</li>
+                    <li><span class="check">&#x2713;</span> Target: NeurIPS, ICML, ICLR, SOSP, ASPLOS, MLSys</li>
+                    <li><span class="check">&#x2713;</span> Access to dedicated communication platform</li>
+                    <li><span class="check">&#x2713;</span> GPU profiling &amp; experiment design guidance</li>
+                </ul>
+                <a href="https://vizuara.ai/courses/course_20006042" target="_blank" class="btn btn-primary">Enroll Now</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-logo"><span class="gradient-text">Vizuara</span> AI Labs</div>
+            <p>&copy; 2026 Vizuara AI Labs. All rights reserved.</p>
+            <p style="margin-top:8px;">GPU Engineer's Research Bootcamp &mdash; 5D Parallelism &amp; Modern AI</p>
+        </div>
+    </footer>
+
+    <script>
+        // Intersection Observer for scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, index * 80);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+        document.querySelectorAll('.animate').forEach(el => observer.observe(el));
+
+        // Toggle frontier card expansion
+        function toggleFrontier(card) {
+            card.classList.toggle('active');
+        }
+
+        // Smooth scroll for nav links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

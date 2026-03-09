@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>From Diffusion LLMs to MoE: GPU Research That Gets Published</title>
+</head>
+<body style="margin:0;padding:0;background-color:#0a0a0a;font-family:Arial,Helvetica,sans-serif;color:#f2f2f2;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">
+
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#0a0a0a;">
+        <tr>
+            <td align="center" style="padding:20px 16px;">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width:600px;width:100%;">
+
+                    <!-- Logo -->
+                    <tr>
+                        <td style="padding:24px 0;text-align:center;">
+                            <span style="font-size:24px;font-weight:bold;color:#00d46a;">Vizuara</span>
+                            <span style="font-size:24px;color:#f2f2f2;"> AI Labs</span>
+                        </td>
+                    </tr>
+
+                    <!-- Hero -->
+                    <tr>
+                        <td style="background:linear-gradient(135deg,#0d1f0d 0%,#0a1525 100%);border:1px solid #262626;border-radius:16px;padding:40px 32px;text-align:center;">
+                            <div style="font-size:12px;color:#00c8e6;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;">Research Deep Dive</div>
+                            <h1 style="font-size:26px;line-height:1.3;margin:0 0 16px;color:#f2f2f2;">
+                                From Diffusion LLMs to MoE:<br>
+                                <span style="color:#00d46a;">GPU Research That Gets Published</span>
+                            </h1>
+                            <p style="font-size:15px;color:#a3a3a3;line-height:1.6;margin:0;">
+                                Here are 5 of the most novel research directions from our bootcamp &mdash; each with zero existing published work.
+                            </p>
+                        </td>
+                    </tr>
+
+                    <tr><td style="height:32px;"></td></tr>
+
+                    <!-- Topic 1 -->
+                    <tr>
+                        <td style="background-color:#121212;border:1px solid #262626;border-radius:12px;padding:24px;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                <tr>
+                                    <td width="40" style="vertical-align:top;">
+                                        <div style="width:32px;height:32px;border-radius:8px;background-color:rgba(0,212,106,0.15);color:#00d46a;font-size:14px;font-weight:700;text-align:center;line-height:32px;">1</div>
+                                    </td>
+                                    <td style="padding-left:12px;">
+                                        <div style="margin-bottom:6px;">
+                                            <span style="display:inline-block;padding:2px 8px;border-radius:10px;background-color:rgba(0,212,106,0.15);color:#00d46a;font-size:10px;font-weight:600;">TP + DP</span>
+                                            <span style="display:inline-block;padding:2px 8px;border-radius:10px;background-color:rgba(255,80,80,0.15);color:#ff5050;font-size:10px;font-weight:600;">High Novelty</span>
+                                        </div>
+                                        <h3 style="font-size:16px;color:#f2f2f2;margin:0 0 8px;">Parallelism-Aware DLM Training</h3>
+                                        <p style="font-size:13px;color:#a3a3a3;line-height:1.5;margin:0;">Mercury achieves 10x faster inference on H100s, but all existing parallelism strategies (Megatron-LM, DeepSpeed) are designed for autoregressive architectures. This project co-designs TP/DP for diffusion-based language models.</p>
+                                        <div style="margin-top:10px;padding-top:10px;border-top:1px solid #262626;font-size:12px;color:#00c8e6;">Target: NeurIPS / ICML</div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr><td style="height:12px;"></td></tr>
+
+                    <!-- Topic 2 -->
+                    <tr>
+                        <td style="background-color:#121212;border:1px solid #262626;border-radius:12px;padding:24px;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                <tr>
+                                    <td width="40" style="vertical-align:top;">
+                                        <div style="width:32px;height:32px;border-radius:8px;background-color:rgba(0,212,106,0.15);color:#00d46a;font-size:14px;font-weight:700;text-align:center;line-height:32px;">2</div>
+                                    </td>
+                                    <td style="padding-left:12px;">
+                                        <div style="margin-bottom:6px;">
+                                            <span style="display:inline-block;padding:2px 8px;border-radius:10px;background-color:rgba(0,212,106,0.15);color:#00d46a;font-size:10px;font-weight:600;">EP + TP</span>
+                                            <span style="display:inline-block;padding:2px 8px;border-radius:10px;background-color:rgba(255,80,80,0.15);color:#ff5050;font-size:10px;font-weight:600;">High Novelty</span>
+                                        </div>
+                                        <h3 style="font-size:16px;color:#f2f2f2;margin:0 0 8px;">MoE &times; Diffusion LLMs</h3>
+                                        <p style="font-size:13px;color:#a3a3a3;line-height:1.5;margin:0;">No published work combines MoE with diffusion-based text generation. Expert routing conditioned on token identity AND denoising timestep could yield the first trillion-parameter DLM trainable on current hardware.</p>
+                                        <div style="margin-top:10px;padding-top:10px;border-top:1px solid #262626;font-size:12px;color:#00c8e6;">Target: ICLR / NeurIPS</div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr><td style="height:12px;"></td></tr>
+
+                    <!-- Topic 3 -->
+                    <tr>
+                        <td style="background-color:#121212;border:1px solid #262626;border-radius:12px;padding:24px;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                <tr>
+                                    <td width="40" style="vertical-align:top;">
+                                        <div style="width:32px;height:32px;border-radius:8px;background-color:rgba(0,212,106,0.15);color:#00d46a;font-size:14px;font-weight:700;text-align:center;line-height:32px;">3</div>
+                                    </td>
+                                    <td style="padding-left:12px;">
+                                        <div style="margin-bottom:6px;">
+                                            <span style="display:inline-block;padding:2px 8px;border-radius:10px;background-color:rgba(0,212,106,0.15);color:#00d46a;font-size:10px;font-weight:600;">DP + TP</span>
+                                            <span style="display:inline-block;padding:2px 8px;border-radius:10px;background-color:rgba(255,80,80,0.15);color:#ff5050;font-size:10px;font-weight:600;">High Novelty</span>
+                                        </div>
+                                        <h3 style="font-size:16px;color:#f2f2f2;margin:0 0 8px;">Speculative Decoding for Discrete Diffusion Models</h3>
+                                        <p style="font-size:13px;color:#a3a3a3;line-height:1.5;margin:0;">Combines two of ML's hottest topics. A draft denoiser predicts token masks in 3&ndash;5 steps instead of 10&ndash;100, while a verifier confirms across GPUs. No equivalent exists for DLMs.</p>
+                                        <div style="margin-top:10px;padding-top:10px;border-top:1px solid #262626;font-size:12px;color:#00c8e6;">Target: ICML / ICLR</div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr><td style="height:12px;"></td></tr>
+
+                    <!-- Topic 4 -->
+                    <tr>
+                        <td style="background-color:#121212;border:1px solid #262626;border-radius:12px;padding:24px;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                <tr>
+                                    <td width="40" style="vertical-align:top;">
+                                        <div style="width:32px;height:32px;border-radius:8px;background-color:rgba(0,212,106,0.15);color:#00d46a;font-size:14px;font-weight:700;text-align:center;line-height:32px;">4</div>
+                                    </td>
+                                    <td style="padding-left:12px;">
+                                        <div style="margin-bottom:6px;">
+                                            <span style="display:inline-block;padding:2px 8px;border-radius:10px;background-color:rgba(0,212,106,0.15);color:#00d46a;font-size:10px;font-weight:600;">PP + DP</span>
+                                            <span style="display:inline-block;padding:2px 8px;border-radius:10px;background-color:rgba(255,80,80,0.15);color:#ff5050;font-size:10px;font-weight:600;">High Novelty</span>
+                                        </div>
+                                        <h3 style="font-size:16px;color:#f2f2f2;margin:0 0 8px;">Zero-Bubble Pipeline Parallelism for Diffusion Training</h3>
+                                        <p style="font-size:13px;color:#a3a3a3;line-height:1.5;margin:0;">Zero-bubble PP (ICLR 2024) assumes autoregressive models. Diffusion models have fundamentally different training dynamics. Better PP could reduce training cost of Stable Diffusion 3 and Sora by 20&ndash;30%.</p>
+                                        <div style="margin-top:10px;padding-top:10px;border-top:1px solid #262626;font-size:12px;color:#00c8e6;">Target: ICML / NeurIPS</div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr><td style="height:12px;"></td></tr>
+
+                    <!-- Topic 5 -->
+                    <tr>
+                        <td style="background-color:#121212;border:1px solid #262626;border-radius:12px;padding:24px;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                <tr>
+                                    <td width="40" style="vertical-align:top;">
+                                        <div style="width:32px;height:32px;border-radius:8px;background-color:rgba(0,212,106,0.15);color:#00d46a;font-size:14px;font-weight:700;text-align:center;line-height:32px;">5</div>
+                                    </td>
+                                    <td style="padding-left:12px;">
+                                        <div style="margin-bottom:6px;">
+                                            <span style="display:inline-block;padding:2px 8px;border-radius:10px;background-color:rgba(0,212,106,0.15);color:#00d46a;font-size:10px;font-weight:600;">All 5D</span>
+                                            <span style="display:inline-block;padding:2px 8px;border-radius:10px;background-color:rgba(255,80,80,0.15);color:#ff5050;font-size:10px;font-weight:600;">High Novelty</span>
+                                        </div>
+                                        <h3 style="font-size:16px;color:#f2f2f2;margin:0 0 8px;">AutoML for 5D Parallelism Configuration</h3>
+                                        <p style="font-size:13px;color:#a3a3a3;line-height:1.5;margin:0;">For a 256-GPU cluster, thousands of valid TP/DP/PP/CP/EP configurations exist. Build a learned cost model + search algorithm to find the optimal config automatically. Could become the "NAS for parallelism."</p>
+                                        <div style="margin-top:10px;padding-top:10px;border-top:1px solid #262626;font-size:12px;color:#00c8e6;">Target: NeurIPS / OSDI / MLSys</div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr><td style="height:32px;"></td></tr>
+
+                    <!-- Deadline Urgency -->
+                    <tr>
+                        <td style="background-color:#1a1a0a;border:1px solid #444400;border-radius:12px;padding:24px;text-align:center;">
+                            <div style="font-size:24px;margin-bottom:8px;">&#x23F0;</div>
+                            <h3 style="font-size:18px;color:#f2f2f2;margin:0 0 8px;">Conference Deadlines Are Coming</h3>
+                            <p style="font-size:14px;color:#a3a3a3;line-height:1.5;margin:0;">
+                                <strong style="color:#00d46a;">NeurIPS 2026:</strong> ~May 7 &bull;
+                                <strong style="color:#00d46a;">ASPLOS 2027:</strong> Apr 15 &bull;
+                                <strong style="color:#00d46a;">SOSP 2026:</strong> Mar 26<br>
+                                Start your research now to hit these deadlines.
+                            </p>
+                        </td>
+                    </tr>
+
+                    <tr><td style="height:32px;"></td></tr>
+
+                    <!-- CTA -->
+                    <tr>
+                        <td style="text-align:center;">
+                            <a href="https://vizuara.ai/admin/edit-course/course_20006042" style="display:inline-block;padding:16px 40px;background-color:#00d46a;color:#000000;text-decoration:none;border-radius:10px;font-weight:700;font-size:16px;">
+                                Enroll Now &mdash; &#x20B9;95,000 &rarr;
+                            </a>
+                            <p style="font-size:13px;color:#a3a3a3;margin-top:16px;">
+                                12 Lectures &bull; 30+ Hours &bull; 15 Research Frontiers &bull; 1:1 Mentorship
+                            </p>
+                        </td>
+                    </tr>
+
+                    <tr><td style="height:40px;"></td></tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="border-top:1px solid #262626;padding:24px 0;text-align:center;">
+                            <p style="font-size:14px;color:#a3a3a3;margin:0;">
+                                <span style="color:#00d46a;font-weight:bold;">Vizuara</span> AI Labs
+                            </p>
+                            <p style="font-size:12px;color:#666;margin:8px 0 0;">
+                                &copy; 2026 Vizuara AI Labs &bull; GPU Engineer's Research Bootcamp
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>
